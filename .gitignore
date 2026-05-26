@@ -4,5 +4,6 @@ __pycache__/
 *.pdf
 venv/
 reportes/
+cfdis_para_procesar/
 .~lock.*
 *.log

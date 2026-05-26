@@ -127,6 +127,7 @@ st.markdown(f"""
 
 # ─── CONSTANTES ──────────────────────────────────────────────────────────
 RUTA_CFDI = "/home/irvin/Documentos/Proyectos/calculadora_fiscal/cfdis_para_procesar"
+RUTA_DATOS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "datos")
 
 # Datos de la Constancia de Situación Fiscal
 NOMBRE_EMPRESA = "BRMN MOTORS COMPANY, S.A. de C.V."
@@ -148,28 +149,13 @@ OBLIGACIONES = [
 EJERCICIO = 2026
 
 # ─── CARGA DE DATOS (CACHED) ─────────────────────────────────────────────
-@st.cache_data(ttl=3600, show_spinner="Procesando CFDIs...")
-def procesar_todo(usar_archivos_subidos=False):
-    if usar_archivos_subidos and 'xml_subidos' in st.session_state:
-        xmls = st.session_state.get('xml_subidos', [])
-        excel_emit = st.session_state.get('excel_emit_subido')
-        excel_recib = st.session_state.get('excel_recib_subido')
-
-        if xmls:
-            with tempfile.TemporaryDirectory() as tmpdir:
-                for x in xmls:
-                    with open(os.path.join(tmpdir, x.name), 'wb') as f:
-                        f.write(x.getbuffer())
-                df_emit, df_recib = cargar_cfdi_masivo(tmpdir)
-        else:
-            df_emit = pd.read_excel(excel_emit) if excel_emit else pd.DataFrame()
-            df_recib = pd.read_excel(excel_recib) if excel_recib else pd.DataFrame()
-            for df in (df_emit, df_recib):
-                if not df.empty:
-                    df['Fecha Emisión'] = pd.to_datetime(df['Fecha Emisión'])
-        return df_emit, df_recib
-
-    df_emit, df_recib = cargar_cfdi_masivo(RUTA_CFDI)
+@st.cache_data(ttl=3600, show_spinner="Cargando datos fiscales...")
+def procesar_todo():
+    if os.path.isdir(RUTA_CFDI):
+        df_emit, df_recib = cargar_cfdi_masivo(RUTA_CFDI)
+    else:
+        df_emit = pd.read_pickle(os.path.join(RUTA_DATOS, "df_emit.pkl"))
+        df_recib = pd.read_pickle(os.path.join(RUTA_DATOS, "df_recib.pkl"))
     return df_emit, df_recib
 
 @st.cache_data(ttl=3600)
@@ -350,30 +336,6 @@ def sidebar_info(rfc, nombre):
                          <span style='color:{COLOR_PRIMARY};font-weight:600;'>◉</span> {obl}
                          <br><span style='color:#999;font-size:0.65rem;'>{ven}</span></div>""",
                         unsafe_allow_html=True)
-        st.markdown("---")
-
-        st.markdown("#### 📂 Cargar CFDIs")
-        st.caption("Sube archivos XML o Excel para procesar")
-        archivos_xml = st.file_uploader(
-            "XMLs (CFDI)", type=['xml'], accept_multiple_files=True,
-            key="xml_uploader", label_visibility="collapsed"
-        )
-        excel_emit = st.file_uploader(
-            "Excel emitidas", type=['xlsx'], key="excel_emit",
-            label_visibility="collapsed"
-        )
-        excel_recib = st.file_uploader(
-            "Excel recibidas", type=['xlsx'], key="excel_recib",
-            label_visibility="collapsed"
-        )
-        if archivos_xml or excel_emit or excel_recib:
-            st.session_state['archivos_subidos'] = True
-            st.session_state['xml_subidos'] = archivos_xml or []
-            st.session_state['excel_emit_subido'] = excel_emit
-            st.session_state['excel_recib_subido'] = excel_recib
-            st.success(f"{len(archivos_xml or [])} XMLs listos")
-        elif 'archivos_subidos' in st.session_state:
-            del st.session_state['archivos_subidos']
         st.markdown("---")
 
         st.markdown("#### 📎 Reportes")
@@ -854,16 +816,12 @@ def resumen_anual_tabla(info):
 def main():
     sidebar_info(RFC, NOMBRE_EMPRESA)
 
-    usar_subidos = st.session_state.get('archivos_subidos', False)
-
-    if not usar_subidos and not os.path.isdir(RUTA_CFDI):
-        st.info("📂 No hay CFDIs locales. Sube archivos XML o Excel desde la barra lateral.")
+    if not os.path.isdir(RUTA_CFDI) and not os.path.isdir(RUTA_DATOS):
+        st.error("No hay datos disponibles. Ejecuta el procesamiento local primero.")
         st.stop()
 
-    num = len(st.session_state.get('xml_subidos', []))
-    label = f"📂 Procesando {num} CFDIs..." if num else "📂 Procesando CFDIs..."
-    with st.spinner(label):
-        df_emit, df_recib = procesar_todo(usar_subidos)
+    with st.spinner("Cargando datos fiscales..."):
+        df_emit, df_recib = procesar_todo()
         info = analisis_detallado(df_emit, df_recib)
 
     st.session_state['datos_mensuales'] = info.get('datos_mensuales', pd.DataFrame())
