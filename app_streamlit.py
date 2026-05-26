@@ -36,7 +36,7 @@ st.set_page_config(
     page_title="Dashboard Fiscal 2026 — BRMN MOTORS COMPANY",
     page_icon="🔧",
     layout="wide",
-    initial_sidebar_state="expanded",
+    initial_sidebar_state="auto",
 )
 
 st.markdown(f"""
@@ -46,18 +46,18 @@ st.markdown(f"""
     .stApp {{ background-color: {COLOR_BG}; }}
     .block-container {{ padding-top: 1.5rem; padding-bottom: 3rem; }}
 
-    .main-header {{ font-size: 2.8rem; font-weight: 800; color: {COLOR_PRIMARY};
+    .main-header {{ font-size: 2.2rem; font-weight: 800; color: {COLOR_PRIMARY};
                      letter-spacing: -1px; line-height: 1.1; }}
-    .main-sub {{ font-size: 1rem; color: #5A7A9A; font-weight: 300; margin-top: -0.3rem; }}
+    .main-sub {{ font-size: 0.9rem; color: #5A7A9A; font-weight: 300; margin-top: -0.3rem; }}
 
     .kpi-card {{ background: linear-gradient(135deg, {COLOR_PRIMARY}, #1A3A5C);
                  padding: 1.2rem 1.5rem; border-radius: 14px; color: white;
                  box-shadow: 0 8px 24px rgba(10,37,64,0.12);
                  border: 1px solid rgba(255,255,255,0.06); }}
-    .kpi-label {{ font-size: 0.75rem; font-weight: 600; text-transform: uppercase;
+    .kpi-label {{ font-size: 0.7rem; font-weight: 600; text-transform: uppercase;
                   letter-spacing: 1px; opacity: 0.7; }}
-    .kpi-value {{ font-size: 2rem; font-weight: 700; line-height: 1.2; }}
-    .kpi-delta {{ font-size: 0.85rem; font-weight: 500; margin-top: 0.2rem; }}
+    .kpi-value {{ font-size: 1.6rem; font-weight: 700; line-height: 1.2; }}
+    .kpi-delta {{ font-size: 0.75rem; font-weight: 500; margin-top: 0.2rem; }}
 
     .kpi-card-gold {{ background: linear-gradient(135deg, #B8860B, {COLOR_SECONDARY});
                       padding: 1.2rem 1.5rem; border-radius: 14px; color: white;
@@ -72,29 +72,56 @@ st.markdown(f"""
     .card {{ background: white; border-radius: 14px; padding: 1.5rem;
              box-shadow: 0 2px 12px rgba(0,0,0,0.04);
              border: 1px solid rgba(0,0,0,0.04); }}
-    .card-title {{ font-size: 0.9rem; font-weight: 700; color: {COLOR_PRIMARY};
+    .card-title {{ font-size: 0.85rem; font-weight: 700; color: {COLOR_PRIMARY};
                    text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1rem; }}
 
     .insight {{ background: #FFFEF5; border-left: 4px solid {COLOR_SECONDARY};
                 padding: 1rem 1.2rem; border-radius: 0 8px 8px 0; margin: 0.8rem 0;
-                font-size: 0.9rem; color: #4A4A4A; }}
+                font-size: 0.85rem; color: #4A4A4A; }}
     .insight strong {{ color: {COLOR_PRIMARY}; }}
-
-    .tax-bracket {{ padding: 0.4rem 0.6rem; border-radius: 6px; font-size: 0.8rem;
-                    margin: 0.15rem 0; color: white; text-align: center;
-                    transition: all 0.2s; }}
-    .tax-bracket:hover {{ transform: scale(1.03); opacity: 0.9; }}
 
     .section-divider {{ border: none; height: 2px;
                         background: linear-gradient(90deg, {COLOR_PRIMARY}, transparent); }}
 
-    h2 {{ color: {COLOR_PRIMARY}; font-weight: 700; font-size: 1.5rem; }}
-    h3 {{ color: {COLOR_PRIMARY}; font-weight: 600; font-size: 1.1rem; }}
+    h2 {{ color: {COLOR_PRIMARY}; font-weight: 700; font-size: 1.3rem; }}
+    h3 {{ color: {COLOR_PRIMARY}; font-weight: 600; font-size: 1rem; }}
 
-    .stTabs [data-baseweb="tab-list"] {{ gap: 0.5rem; }}
-    .stTabs [data-baseweb="tab"] {{ border-radius: 8px 8px 0 0; padding: 0.5rem 1rem; }}
+    .stTabs [data-baseweb="tab-list"] {{ gap: 0.3rem; overflow-x: auto; }}
+    .stTabs [data-baseweb="tab"] {{ border-radius: 8px 8px 0 0; padding: 0.4rem 0.6rem;
+                                    font-size: 0.75rem; white-space: nowrap; }}
 
-    .footer {{ text-align: center; color: #999; font-size: 0.75rem; margin-top: 3rem; }}
+    .footer {{ text-align: center; color: #999; font-size: 0.7rem; margin-top: 3rem; }}
+
+    /* Responsive: tablets */
+    @media (max-width: 992px) {{
+        .main-header {{ font-size: 1.8rem; }}
+        .kpi-value {{ font-size: 1.3rem; }}
+        .card {{ padding: 1rem; }}
+        .block-container {{ padding-top: 1rem; padding-bottom: 2rem; }}
+    }}
+
+    /* Responsive: phones */
+    @media (max-width: 576px) {{
+        .main-header {{ font-size: 1.3rem; letter-spacing: 0; }}
+        .main-sub {{ font-size: 0.7rem; }}
+        .kpi-card, .kpi-card-gold, .kpi-card-danger, .kpi-card-green {{
+            padding: 0.8rem 1rem; }}
+        .kpi-value {{ font-size: 1.1rem; }}
+        .kpi-label {{ font-size: 0.6rem; }}
+        .kpi-delta {{ font-size: 0.65rem; }}
+        .card {{ padding: 0.8rem; border-radius: 10px; }}
+        .card-title {{ font-size: 0.75rem; }}
+        .stTabs [data-baseweb="tab"] {{ padding: 0.3rem 0.4rem; font-size: 0.65rem; }}
+        .block-container {{ padding-left: 0.5rem; padding-right: 0.5rem;
+                            padding-top: 0.5rem; }}
+        .footer {{ font-size: 0.6rem; }}
+        .insight {{ padding: 0.7rem 0.8rem; font-size: 0.75rem; }}
+    }}
+
+    /* Sidebar responsive */
+    @media (max-width: 576px) {{
+        section[data-testid="stSidebar"] {{ width: 260px !important; }}
+    }}
 </style>
 """, unsafe_allow_html=True)
 
@@ -368,7 +395,8 @@ def sidebar_info(rfc, nombre):
 
 
 def metricas_principales(info):
-    c1, c2, c3, c4, c5 = st.columns(5)
+    c1, c2, c3 = st.columns(3)
+    c4, c5 = st.columns(2)
 
     with c1:
         st.markdown(f"""<div class="kpi-card">
